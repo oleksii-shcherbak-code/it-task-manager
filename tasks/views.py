@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+
+from .forms import WorkerCreationForm, WorkerChangeForm
 from .models import Task
 
 
@@ -9,6 +11,25 @@ def index(request):
     """Home Page"""
     context = {"title": "Home"}
     return render(request, "tasks/index.html", context=context)
+
+
+class RegisterView(CreateView):
+    form_class = WorkerCreationForm
+    template_name = "registration/register.html"
+    success_url = reverse_lazy("login")
+
+
+class ProfileView(TemplateView):
+    template_name = "profile.html"
+
+
+class ProfileUpdateView(UpdateView):
+    form_class = WorkerChangeForm
+    template_name = "profile_edit.html"
+    success_url = reverse_lazy("profile")
+
+    def get_object(self):
+        return self.request.user
 
 
 class TaskListView(LoginRequiredMixin, ListView):
