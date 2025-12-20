@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .forms import WorkerCreationForm, WorkerChangeForm
-from .models import Task
+from .models import Task, Worker
 
 
 def index(request):
@@ -51,7 +51,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     template_name = "tasks/task_form.html"
 
     def get_success_url(self):
-        return reverse_lazy("tasks:task-list")
+        return reverse_lazy("task-list")
 
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
@@ -60,10 +60,22 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "tasks/task_form.html"
 
     def get_success_url(self):
-        return reverse_lazy("tasks:task-list")
+        return reverse_lazy("task-list")
 
 
 class TaskDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     template_name = "tasks/task_confirm_delete.html"
-    success_url = reverse_lazy("tasks:task-list")
+    success_url = reverse_lazy("task-list")
+
+
+class WorkerListView(LoginRequiredMixin, ListView):
+    model = Worker
+    template_name = "workers/worker_list.html"
+    context_object_name = "workers"
+
+
+class WorkerDetailView(LoginRequiredMixin, DetailView):
+    model = Worker
+    template_name = "workers/worker_detail.html"
+    context_object_name = "worker"
