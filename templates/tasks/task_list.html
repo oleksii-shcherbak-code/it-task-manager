@@ -5,7 +5,7 @@
 {% block content %}
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Tasks</h2>
-    <a href="{% url 'tasks:task-create' %}" class="btn btn-success">+ Create Task</a>
+    <a href="{% url 'task-create' %}" class="btn btn-success">+ Create Task</a>
   </div>
 
   <table class="table table-hover table-bordered">
@@ -34,9 +34,9 @@
             {% endif %}
           </td>
           <td>
-            <a href="{% url 'tasks:task-detail' task.pk %}" class="btn btn-sm btn-info">View</a>
-            <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
-            <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            <a href="{% url 'task-detail' task.pk %}" class="btn btn-sm btn-info">View</a>
+            <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'task-delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
           </td>
         </tr>
       {% empty %}

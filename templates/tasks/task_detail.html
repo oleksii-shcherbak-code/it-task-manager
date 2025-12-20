@@ -14,7 +14,7 @@
     <li class="list-group-item"><strong>Status:</strong> {% if task.is_completed %}✅ Completed{% else %}❌ In progress{% endif %}</li>
   </ul>
 
-  <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-warning">Edit</a>
-  <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-danger">Delete</a>
-  <a href="{% url 'tasks:task-list' %}" class="btn btn-secondary">Back to list</a>
+  <a href="{% url 'task-update' task.pk %}" class="btn btn-warning">Edit</a>
+  <a href="{% url 'task-delete' task.pk %}" class="btn btn-danger">Delete</a>
+  <a href="{% url 'task-list' %}" class="btn btn-secondary">Back to list</a>
 {% endblock %}

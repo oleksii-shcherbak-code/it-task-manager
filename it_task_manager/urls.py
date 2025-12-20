@@ -19,17 +19,48 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
-from tasks.views import RegisterView, ProfileView, ProfileUpdateView
+from tasks.views import (
+    # Index
+    index,
+
+    # Auth & Profile
+    RegisterView, ProfileView, ProfileUpdateView,
+
+    # Workers
+    WorkerListView, WorkerDetailView,
+
+    # Tasks
+    TaskListView, TaskDetailView, TaskCreateView,
+    TaskUpdateView, TaskDeleteView,
+)
 
 urlpatterns = [
+    # Admin & Debug
     path("admin/", admin.site.urls),
     path("__debug__/", include(debug_toolbar.urls)),
-    path("", include("tasks.urls")),
+
+    # Index
+    path("", index, name="index"),
+
+    # Auth
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+
+    # Profile
     path("profile/", ProfileView.as_view(), name="profile"),
     path("profile/edit/", ProfileUpdateView.as_view(), name="profile-edit"),
     path("password_change/", auth_views.PasswordChangeView.as_view(template_name="registration/password_change.html"), name="password_change"),
     path("password_reset/", auth_views.PasswordResetView.as_view(template_name="registration/password_reset.html"), name="password_reset"),
+
+    # Workers
+    path("workers/", WorkerListView.as_view(), name="worker-list"),
+    path("workers/<int:pk>/", WorkerDetailView.as_view(), name="worker-detail"),
+
+    # Tasks
+    path("tasks/", TaskListView.as_view(), name="task-list"),
+    path("tasks/<int:pk>/", TaskDetailView.as_view(), name="task-detail"),
+    path("tasks/create/", TaskCreateView.as_view(), name="task-create"),
+    path("tasks/<int:pk>/update/", TaskUpdateView.as_view(), name="task-update"),
+    path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
 ]
