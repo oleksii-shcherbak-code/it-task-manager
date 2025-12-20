@@ -1,1 +1,47 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}<title>Tasks</title>{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Tasks</h2>
+    <a href="{% url 'tasks:task-create' %}" class="btn btn-success">+ Create Task</a>
+  </div>
+
+  <table class="table table-hover table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Title</th>
+        <th>Assignee</th>
+        <th>Deadline</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th style="width: 200px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td>{{ task.title }}</td>
+          <td>{{ task.assignee }}</td>
+          <td>{{ task.deadline|date:"Y-m-d H:i" }}</td>
+          <td><span class="badge bg-info">{{ task.get_priority_display }}</span></td>
+          <td>
+            {% if task.is_completed %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">In progress</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'tasks:task-detail' task.pk %}" class="btn btn-sm btn-info">View</a>
+            <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center">No tasks yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
