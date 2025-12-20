@@ -1,5 +1,11 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}<title>IT Task Manager</title>{% endblock %}
 
 {% block content %}
-  <p>Hello world</p>
+  <div class="text-center">
+    <h1 class="display-4">Welcome to IT Task Manager 🚀</h1>
+    <p class="lead">Manage tasks, workers, and priorities in one place.</p>
+    <a href="{% url 'tasks:task-list' %}" class="btn btn-primary btn-lg">View Tasks</a>
+  </div>
 {% endblock %}
