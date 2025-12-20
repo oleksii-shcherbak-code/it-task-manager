@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>My Profile</h2>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Position:</strong> {{ user.position }}</p>
+      <a href="{% url 'profile-edit' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+  </div>
+
+  <h3 class="mt-4">My Tasks</h3>
+  <ul class="list-group">
+    {% for task in user.tasks.all %}
+      <li class="list-group-item">
+        <a href="{% url 'task-detail' task.id %}">{{ task.title }}</a>
+        <span class="badge bg-secondary">{{ task.priority }}</span>
+        {% if task.is_completed %}
+          <span class="badge bg-success">Completed</span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="list-group-item">No tasks assigned.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
