@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">🙍 {{ worker.username }}</h2>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p><strong>Name:</strong> {{ worker.first_name }} {{ worker.last_name }}</p>
+      <p><strong>Email:</strong> {{ worker.email }}</p>
+      <p><strong>Position:</strong> {{ worker.position|default:"—" }}</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3">📝 Assigned Tasks</h3>
+  <ul class="list-group">
+    {% for task in worker.tasks.all %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <a href="{% url 'task-detail' task.id %}" class="fw-bold">{{ task.title }}</a>
+          {% if task.deadline %}
+            <small class="text-muted">Deadline: {{ task.deadline|date:"d M Y H:i" }}</small>
+          {% endif %}
+        </div>
+        <div>
+          <span class="badge bg-secondary">{{ task.priority }}</span>
+          {% if task.is_completed %}
+            <span class="badge bg-success">Completed</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+          {% endif %}
+        </div>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No tasks assigned.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
