@@ -1,7 +1,9 @@
 from datetime import timedelta
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -147,6 +149,16 @@ class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
     model = TaskType
     template_name = "task_type/task_type_confirm_delete.html"
     success_url = reverse_lazy("task-type-list")
+
+
+@login_required
+def toggle_task_status(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+
+    task.is_completed = not task.is_completed
+    task.save()
+
+    return redirect("task-detail", pk=pk)
 
 
 class TaskTypeAnalyticsView(LoginRequiredMixin, TemplateView):

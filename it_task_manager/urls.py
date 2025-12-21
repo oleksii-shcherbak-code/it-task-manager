@@ -43,6 +43,9 @@ from tasks.views import (
 
     # Avatar
     AvatarChangeView,
+
+    # Task status
+    toggle_task_status,
 )
 
 urlpatterns = [
@@ -89,5 +92,8 @@ urlpatterns = [
 
     # Avatar
     path("profile/avatar/", AvatarChangeView.as_view(), name="avatar-change"),
+
+    # Task status
+    path("tasks/<int:pk>/toggle/", toggle_task_status, name="task-toggle"),
 
 ]
