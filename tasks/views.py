@@ -80,6 +80,30 @@ class TaskListView(LoginRequiredMixin, ListView):
     context_object_name = "tasks"
     paginate_by = 10
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        sort = self.request.GET.get("sort")
+        direction = self.request.GET.get("dir", "asc")
+
+        if sort in ["title", "deadline", "priority", "is_completed"]:
+            if direction == "desc":
+                return qs.order_by(f"-{sort}")
+            return qs.order_by(sort)
+
+        if sort == "assignee":
+            if direction == "desc":
+                return qs.order_by("-assignee__username")
+            return qs.order_by("assignee__username")
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["current_sort"] = self.request.GET.get("sort", "")
+        ctx["current_dir"] = self.request.GET.get("dir", "asc")
+        return ctx
+
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
