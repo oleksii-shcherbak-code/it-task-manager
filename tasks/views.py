@@ -1,10 +1,14 @@
+from datetime import timedelta
+
+from django.db.models import Count
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .forms import WorkerCreationForm, WorkerChangeForm
-from .models import Task, Worker
+from .models import Task, Worker, TaskType
 
 
 def index(request):
@@ -79,3 +83,67 @@ class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
     template_name = "workers/worker_detail.html"
     context_object_name = "worker"
+
+
+class TaskTypeListView(ListView):
+    model = TaskType
+    template_name = "task_type/task_type_list.html"
+    context_object_name = "task_types"
+
+
+class TaskTypeDetailView(DetailView):
+    model = TaskType
+    template_name = "task_type/task_type_detail.html"
+    context_object_name = "task_type"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tasks"] = Task.objects.filter(task_type=self.object)
+        return context
+
+
+class TaskTypeCreateView(CreateView):
+    model = TaskType
+    fields = ["name"]
+    template_name = "task_type/task_type_form.html"
+    success_url = reverse_lazy("task-type-list")
+
+
+class TaskTypeUpdateView(UpdateView):
+    model = TaskType
+    fields = ["name"]
+    template_name = "task_type/task_type_form.html"
+    success_url = reverse_lazy("task-type-list")
+
+
+class TaskTypeDeleteView(DeleteView):
+    model = TaskType
+    template_name = "task_type/task_type_confirm_delete.html"
+    success_url = reverse_lazy("task-type-list")
+
+
+class TaskTypeAnalyticsView(TemplateView):
+    template_name = "task_type/task_type_analytics.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        last_month = timezone.now() - timedelta(days=30)
+
+        tasks_by_type = (
+            Task.objects.filter(created_at__gte=last_month)
+            .values("task_type__name")
+            .annotate(total=Count("id"))
+            .order_by("-total")
+        )
+
+        completed_by_type = (
+            Task.objects.filter(is_completed=True, updated_at__gte=last_month)
+            .values("task_type__name")
+            .annotate(total=Count("id"))
+            .order_by("-total")
+        )
+
+        context["tasks_by_type"] = tasks_by_type
+        context["completed_by_type"] = completed_by_type
+        return context
+

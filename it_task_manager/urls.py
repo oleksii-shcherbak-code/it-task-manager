@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
 from tasks.views import (
-    # Index
+    # Index/Home
     index,
 
     # Auth & Profile
@@ -32,6 +32,11 @@ from tasks.views import (
     # Tasks
     TaskListView, TaskDetailView, TaskCreateView,
     TaskUpdateView, TaskDeleteView,
+
+    # Task Types
+    TaskTypeListView, TaskTypeDetailView,
+    TaskTypeCreateView, TaskTypeUpdateView,
+    TaskTypeDeleteView, TaskTypeAnalyticsView,
 )
 
 urlpatterns = [
@@ -63,4 +68,12 @@ urlpatterns = [
     path("tasks/create/", TaskCreateView.as_view(), name="task-create"),
     path("tasks/<int:pk>/update/", TaskUpdateView.as_view(), name="task-update"),
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
+
+    # Task Types
+    path("task-types/", TaskTypeListView.as_view(), name="task-type-list"),
+    path("task-types/<int:pk>/", TaskTypeDetailView.as_view(), name="task-type-detail"),
+    path("task-types/create/", TaskTypeCreateView.as_view(), name="task-type-create"),
+    path("task-types/<int:pk>/update/", TaskTypeUpdateView.as_view(), name="task-type-update"),
+    path("task-types/<int:pk>/delete/", TaskTypeDeleteView.as_view(), name="task-type-delete"),
+    path("task-types/analytics/", TaskTypeAnalyticsView.as_view(), name="task-type-analytics"),
 ]
