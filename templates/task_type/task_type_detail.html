@@ -2,7 +2,6 @@
 {% block content %}
   <div class="container mt-4">
     <h2>Task Type: {{ task_type.name }}</h2>
-    <p>Task ID: #{{ task_type.id }}</p>
 
     <div class="mb-3">
       <a href="{% url 'task-type-update' task_type.pk %}" class="btn btn-warning">✏️ Edit</a>
@@ -10,7 +9,7 @@
       <a href="{% url 'task-type-list' %}" class="btn btn-secondary">⬅ Back to list</a>
     </div>
 
-    <h3>Tasks with this type</h3>
+    <h4>Tasks with this type</h4>
     {% if tasks %}
       <div class="card shadow-sm">
         <div class="card-body p-0">
