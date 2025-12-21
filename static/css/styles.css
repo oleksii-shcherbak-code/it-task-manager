@@ -109,3 +109,57 @@ input:focus, select:focus, textarea:focus {
     float: right;
     margin: 0 2px;
 }
+
+/* ============================
+   SIDEBAR (modern block style)
+   ============================ */
+
+.sidebar-menu {
+    width: 100%;
+    padding: 10px 0;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #e2e2e2;
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.sidebar-item .icon {
+    font-size: 20px;
+    margin-right: 12px;
+    opacity: 0.9;
+}
+
+.sidebar-item:hover {
+    background-color: #f1f5ff;
+    border-color: #c7d7ff;
+    transform: translateX(4px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+.sidebar-item.active {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0a58ca;
+    box-shadow: 0 3px 8px rgba(13,110,253,0.3);
+}
+
+.sidebar-item.active .icon {
+    opacity: 1;
+}
+
+/* Disable underline on sidebar links */
+.sidebar-item,
+.sidebar-item:hover {
+    text-decoration: none !important;
+}
