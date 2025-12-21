@@ -1,48 +1,41 @@
-import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from .validators import validate_username, validate_only_letters
 
 Worker = get_user_model()
 
 
-def validate_username(username: str) -> str:
-    if not re.fullmatch(r"[A-Za-z0-9_]+", username):
-        raise forms.ValidationError(
-            "Username may contain only Latin letters, digits, and the '_' symbol."
-        )
-    if username.count("_") > 1:
-        raise forms.ValidationError(
-            "Username may contain at most one '_' symbol."
-        )
-    if len(username) < 3 or len(username) > 30:
-        raise forms.ValidationError(
-            "Username must be between 3 and 30 characters long."
-        )
-    return username
-
-
 class WorkerCreationForm(UserCreationForm):
+    first_name = forms.CharField(validators=[validate_only_letters], required=True)
+    last_name = forms.CharField(validators=[validate_only_letters], required=True)
+
     class Meta:
         model = Worker
-        fields = ("username", "email", "position")
-        help_texts = {
-            "username": ""  # 🔥 убираем help_text
-        }
+        fields = ("username", "first_name", "last_name", "email", "position")
+        help_texts = {"username": ""}
 
     def clean_username(self):
-        return validate_username(self.cleaned_data.get("username"))
+        validate_username(self.cleaned_data.get("username"))
+        return self.cleaned_data.get("username")
+
+    def clean_password1(self):
+        password = self.cleaned_data.get("password1")
+        validate_password(password, self.instance)
+        return password
 
 
 class WorkerChangeForm(UserChangeForm):
     password = None
+    first_name = forms.CharField(validators=[validate_only_letters], required=True)
+    last_name = forms.CharField(validators=[validate_only_letters], required=True)
 
     class Meta:
         model = Worker
-        fields = ("username", "email", "position")
-        help_texts = {
-            "username": ""
-        }
+        fields = ("username", "first_name", "last_name", "email", "position")
+        help_texts = {"username": ""}
 
     def clean_username(self):
-        return validate_username(self.cleaned_data.get("username"))
+        validate_username(self.cleaned_data.get("username"))
+        return self.cleaned_data.get("username")
