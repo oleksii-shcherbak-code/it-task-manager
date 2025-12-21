@@ -36,6 +36,14 @@ class ProfileUpdateView(UpdateView):
         return self.request.user
 
 
+class WorkerListView(LoginRequiredMixin, ListView):
+    model = Worker
+    template_name = "workers/worker_list.html"
+    context_object_name = "workers"
+
+
+
+
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = "tasks/task_list.html"
