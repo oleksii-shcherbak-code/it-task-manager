@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container mt-4">
+    <h2>Task Type: {{ task_type.name }}</h2>
+    <p>Task ID: #{{ task_type.id }}</p>
+
+    <div class="mb-3">
+      <a href="{% url 'task-type-update' task_type.pk %}" class="btn btn-warning">✏️ Edit</a>
+      <a href="{% url 'task-type-delete' task_type.pk %}" class="btn btn-danger">🗑 Delete</a>
+      <a href="{% url 'task-type-list' %}" class="btn btn-secondary">⬅ Back to list</a>
+    </div>
+
+    <h3>Tasks with this type</h3>
+    {% if tasks %}
+      <div class="card shadow-sm">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Title</th>
+              <th scope="col">Status</th>
+              <th scope="col">Created</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                  <a href="{% url 'task-detail' task.pk %}" class="text-decoration-none">
+                    {{ task.title }}
+                  </a>
+                </td>
+                <td>{{ task.status }}</td>
+                <td>{{ task.created_at|date:"Y-m-d H:i" }}</td>
+                <td class="text-end">
+                  <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                  <a href="{% url 'task-delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-secondary mt-3" role="alert">
+        No tasks with this type yet.
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

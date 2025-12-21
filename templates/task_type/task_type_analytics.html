@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Task Analytics (last 30 days)</h2>
+
+  <h3>Created tasks by type</h3>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Task Type</th>
+      <th>Total Created</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in tasks_by_type %}
+      <tr>
+        <td>{{ row.task_type__name }}</td>
+        <td>{{ row.total }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="2">No tasks created in the last 30 days.</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Completed tasks by type</h3>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Task Type</th>
+      <th>Total Completed</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in completed_by_type %}
+      <tr>
+        <td>{{ row.task_type__name }}</td>
+        <td>{{ row.total }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="2">No tasks completed in the last 30 days.</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url 'task-type-list' %}" class="btn btn-secondary">Back to Task Types</a>
+{% endblock %}
