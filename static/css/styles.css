@@ -25,9 +25,10 @@ a {
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
+
 a:hover {
     color: #0056b3;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .btn {
@@ -40,6 +41,7 @@ a:hover {
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
+
 .btn:hover {
     background-color: #0056b3;
 }
@@ -50,11 +52,12 @@ a:hover {
     border-radius: 6px;
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.2s ease-in-out;
 }
+
 .card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .alert {
@@ -62,16 +65,19 @@ a:hover {
     border-radius: 4px;
     margin-bottom: 15px;
 }
+
 .alert-info {
     background-color: #e7f3fe;
     border: 1px solid #b3d7ff;
     color: #31708f;
 }
+
 .alert-success {
     background-color: #d4edda;
     border: 1px solid #c3e6cb;
     color: #155724;
 }
+
 .alert-danger {
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
@@ -83,13 +89,29 @@ table {
     border-collapse: collapse;
     margin-bottom: 20px;
 }
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
 table th, table td {
     border: 1px solid #ddd;
     padding: 8px;
 }
+
 table th {
     background-color: #f1f1f1;
     text-align: left;
+}
+
+table th a,
+table th a:hover {
+    text-decoration: none !important;
+    color: inherit;
 }
 
 input, select, textarea {
@@ -100,6 +122,7 @@ input, select, textarea {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 input:focus, select:focus, textarea:focus {
     border-color: #007bff;
     outline: none;
@@ -109,10 +132,6 @@ input:focus, select:focus, textarea:focus {
     float: right;
     margin: 0 2px;
 }
-
-/* ============================
-   SIDEBAR (modern block style)
-   ============================ */
 
 .sidebar-menu {
     width: 100%;
@@ -129,9 +148,9 @@ input:focus, select:focus, textarea:focus {
     border: 1px solid #e2e2e2;
     color: #333;
     font-weight: 500;
-    text-decoration: none;
+    text-decoration: none !important;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .sidebar-item .icon {
@@ -144,22 +163,75 @@ input:focus, select:focus, textarea:focus {
     background-color: #f1f5ff;
     border-color: #c7d7ff;
     transform: translateX(4px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    text-decoration: none !important;
 }
 
 .sidebar-item.active {
     background-color: #0d6efd;
     color: #fff;
     border-color: #0a58ca;
-    box-shadow: 0 3px 8px rgba(13,110,253,0.3);
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.3);
+    text-decoration: none !important;
 }
 
 .sidebar-item.active .icon {
     opacity: 1;
 }
 
-/* Disable underline on sidebar links */
-.sidebar-item,
-.sidebar-item:hover {
-    text-decoration: none !important;
+.task-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.task-row:hover {
+    background-color: #f1f5ff;
+}
+
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    h1, h2, h3 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .task-row td {
+        padding: 12px 6px;
+    }
+}
+
+.sortable-column {
+    font-weight: 600;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sortable-column:hover {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sortable-column:active {
+    background-color: #d0e4ff;
 }
