@@ -1,22 +1,31 @@
 from datetime import timedelta
 
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from rapidfuzz import fuzz
 
 from .forms import WorkerCreationForm, WorkerChangeForm
-from .models import Task, Worker, TaskType
+from .models import Task, Worker, TaskType, AVATAR_CHOICES
 
 
+# -----------------------------
+# Home
+# -----------------------------
 def index(request):
-    """Home Page"""
     context = {"title": "Home"}
     return render(request, "tasks/index.html", context=context)
 
 
+# -----------------------------
+# Auth & Profile
+# -----------------------------
 class RegisterView(CreateView):
     form_class = WorkerCreationForm
     template_name = "registration/register.html"
@@ -91,18 +100,9 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("task-list")
 
 
-class WorkerListView(LoginRequiredMixin, ListView):
-    model = Worker
-    template_name = "workers/worker_list.html"
-    context_object_name = "workers"
-
-
-class WorkerDetailView(LoginRequiredMixin, DetailView):
-    model = Worker
-    template_name = "workers/worker_detail.html"
-    context_object_name = "worker"
-
-
+# -----------------------------
+# Task Types
+# -----------------------------
 class TaskTypeListView(ListView):
     model = TaskType
     template_name = "task_type/task_type_list.html"
@@ -147,24 +147,95 @@ class TaskTypeAnalyticsView(TemplateView):
         context = super().get_context_data(**kwargs)
         last_month = timezone.now() - timedelta(days=30)
 
-        tasks_by_type = (
+        context["tasks_by_type"] = (
             Task.objects.filter(created_at__gte=last_month)
             .values("task_type__name")
             .annotate(total=Count("id"))
             .order_by("-total")
         )
 
-        completed_by_type = (
+        context["completed_by_type"] = (
             Task.objects.filter(is_completed=True, updated_at__gte=last_month)
             .values("task_type__name")
             .annotate(total=Count("id"))
             .order_by("-total")
         )
 
-        context["tasks_by_type"] = tasks_by_type
-        context["completed_by_type"] = completed_by_type
         return context
 
+
+# -----------------------------
+# Search (Fuzzy Search)
+# -----------------------------
+class SearchView(LoginRequiredMixin, TemplateView):
+    template_name = "search.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        query = self.request.GET.get("q", "").strip()
+        context["query"] = query
+
+        if not query:
+            context["tasks"] = []
+            context["workers"] = []
+            return context
+
+        workers = []
+        for worker in Worker.objects.all():
+            full_name = f"{worker.first_name} {worker.last_name}"
+            score = fuzz.partial_ratio(query.lower(), full_name.lower())
+            if score > 60:
+                workers.append(worker)
+
+        tasks = []
+        for task in Task.objects.all():
+            score = fuzz.partial_ratio(query.lower(), task.title.lower())
+            if score > 60:
+                tasks.append(task)
+
+        context["workers"] = workers
+        context["tasks"] = tasks
+
+        return context
+
+
+# -----------------------------
+# Autocomplete Suggestions
+# -----------------------------
+def search_suggest(request):
+    query = request.GET.get("q", "").strip()
+
+    if not query:
+        return JsonResponse([], safe=False)
+
+    suggestions = []
+
+    # Workers
+    for worker in Worker.objects.all():
+        full_name = f"{worker.first_name} {worker.last_name}"
+        if query.lower() in full_name.lower():
+            suggestions.append({
+                "type": "worker",
+                "name": full_name,
+                "id": worker.id,
+            })
+
+    # Tasks
+    for task in Task.objects.all():
+        if query.lower() in task.title.lower():
+            suggestions.append({
+                "type": "task",
+                "name": task.title,
+                "id": task.id,
+            })
+
+    return JsonResponse(suggestions[:5], safe=False)
+
+
+# -----------------------------
+# Avatar Change
+# -----------------------------
 class AvatarChangeView(LoginRequiredMixin, TemplateView):
     template_name = "avatar_change.html"
 
