@@ -37,6 +37,12 @@ from tasks.views import (
     TaskTypeListView, TaskTypeDetailView,
     TaskTypeCreateView, TaskTypeUpdateView,
     TaskTypeDeleteView, TaskTypeAnalyticsView,
+
+    # Search
+    SearchView, search_suggest,
+
+    # Avatar
+    AvatarChangeView,
 )
 
 urlpatterns = [
@@ -76,4 +82,12 @@ urlpatterns = [
     path("task-types/<int:pk>/update/", TaskTypeUpdateView.as_view(), name="task-type-update"),
     path("task-types/<int:pk>/delete/", TaskTypeDeleteView.as_view(), name="task-type-delete"),
     path("task-types/analytics/", TaskTypeAnalyticsView.as_view(), name="task-type-analytics"),
+
+    # Search
+    path("search/", SearchView.as_view(), name="search"),
+    path("search/suggest/", search_suggest, name="search-suggest"),
+
+    # Avatar
+    path("profile/avatar/", AvatarChangeView.as_view(), name="avatar-change"),
+
 ]
