@@ -2,6 +2,21 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+# --- Avatar choices ---
+AVATAR_CHOICES = [
+    ("avatar1.svg", "Avatar 1"),
+    ("avatar2.svg", "Avatar 2"),
+    ("avatar3.svg", "Avatar 3"),
+    ("avatar4.svg", "Avatar 4"),
+    ("avatar5.svg", "Avatar 5"),
+    ("avatar6.svg", "Avatar 6"),
+    ("avatar7.svg", "Avatar 7"),
+    ("avatar8.svg", "Avatar 8"),
+    ("avatar9.svg", "Avatar 9"),
+    ("avatar10.svg", "Avatar 10"),
+]
+
+
 class Position(models.Model):
     name = models.CharField(max_length=100)
 
@@ -15,6 +30,12 @@ class Worker(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True
+    )
+
+    avatar = models.CharField(
+        max_length=30,
+        choices=AVATAR_CHOICES,
+        default="avatar1.svg"
     )
 
     class Meta:
