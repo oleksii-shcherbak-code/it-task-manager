@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+
+    <!-- Query title -->
+    <h2 class="mb-4">
+      Search results for: <span class="text-primary">{{ query }}</span>
+    </h2>
+
+    <!-- Nothing found -->
+    {% if not tasks and not workers %}
+      <div class="alert alert-warning">
+        No results found for "<strong>{{ query }}</strong>"
+      </div>
+    {% endif %}
+
+    <!-- Tasks -->
+    {% if tasks %}
+      <h4 class="mt-4">Tasks</h4>
+      <div class="list-group mb-4">
+        {% for task in tasks %}
+          <a href="{% url 'task-detail' task.id %}" class="list-group-item list-group-item-action">
+            <div class="d-flex justify-content-between">
+                        <span>
+                            <strong>{{ task.title }}</strong>
+                          {% if task.task_type %}
+                            <small class="text-muted">({{ task.task_type.name }})</small>
+                          {% endif %}
+                        </span>
+              <span class="badge bg-secondary">{{ task.priority }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Workers -->
+    {% if workers %}
+      <h4 class="mt-4">Workers</h4>
+      <div class="row">
+        {% for worker in workers %}
+          <div class="col-4 mb-3">
+            <a href="{% url 'worker-detail' worker.id %}" class="text-decoration-none text-dark">
+              <div class="card p-3 shadow-sm">
+                <div class="d-flex align-items-center">
+                  <img src="{% static 'avatars/' %}{{ worker.avatar }}"
+                       class="rounded-circle me-3"
+                       width="48" height="48">
+                  <div>
+                    <strong>{{ worker.first_name }} {{ worker.last_name }}</strong><br>
+                    <small class="text-muted">{{ worker.position }}</small>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}
