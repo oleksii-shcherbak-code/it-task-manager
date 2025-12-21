@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 
 from tasks.views import (
     # Index/Home
-    index,
+    IndexView,
 
     # Auth & Profile
     RegisterView, ProfileView, ProfileUpdateView,
@@ -51,7 +51,7 @@ urlpatterns = [
     path("__debug__/", include(debug_toolbar.urls)),
 
     # Index
-    path("", index, name="index"),
+    path("", IndexView.as_view(), name="index"),
 
     # Auth
     path("register/", RegisterView.as_view(), name="register"),
