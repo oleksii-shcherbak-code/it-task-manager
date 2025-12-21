@@ -1,38 +1,80 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-3">🙍 {{ worker.username }}</h2>
-  <div class="card mb-4">
-    <div class="card-body">
-      <p><strong>Name:</strong> {{ worker.first_name }} {{ worker.last_name }}</p>
-      <p><strong>Email:</strong> {{ worker.email }}</p>
-      <p><strong>Position:</strong> {{ worker.position|default:"—" }}</p>
-    </div>
-  </div>
+  <div class="container mt-4">
 
-  <h3 class="mb-3">📝 Assigned Tasks</h3>
-  <ul class="list-group">
-    {% for task in worker.tasks.all %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <a href="{% url 'task-detail' task.id %}" class="fw-bold">{{ task.title }}</a>
-          {% if task.deadline %}
-            <small class="text-muted">Deadline: {{ task.deadline|date:"d M Y H:i" }}</small>
-          {% endif %}
+    <!-- Header -->
+    <h2 class="mb-4">Worker Profile</h2>
+
+    <!-- Profile Card -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+
+        <div class="row">
+
+          <!-- LEFT SIDE: Text info -->
+          <div class="col-md-8">
+            <h3 class="fw-bold">{{ worker.first_name }} {{ worker.last_name }}</h3>
+
+            <p class="mb-1">
+              <strong>Username:</strong> {{ worker.username }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Email:</strong> {{ worker.email }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Position:</strong> {{ worker.position|default:"—" }}
+            </p>
+          </div>
+
+          <!-- RIGHT SIDE: Avatar -->
+          <div class="col-md-4 text-center">
+            <img src="{% static 'avatars/' %}{{ worker.avatar }}"
+                 alt="avatar"
+                 class="rounded-circle mb-2"
+                 width="140" height="140">
+
+            <div class="mt-2">
+            <span class="badge bg-primary fs-6">
+              {{ worker.position|default:"No position" }}
+            </span>
+            </div>
+          </div>
+
         </div>
-        <div>
-          <span class="badge bg-secondary">{{ task.priority }}</span>
-          {% if task.is_completed %}
-            <span class="badge bg-success">Completed</span>
-          {% else %}
-            <span class="badge bg-warning text-dark">Pending</span>
-          {% endif %}
-        </div>
-      </li>
-    {% empty %}
-      <li class="list-group-item">No tasks assigned.</li>
-    {% endfor %}
-  </ul>
-</div>
+
+      </div>
+    </div>
+
+    <!-- Assigned Tasks -->
+    <h3 class="mb-3">📝 Assigned Tasks</h3>
+
+    <ul class="list-group">
+      {% for task in worker.tasks.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'task-detail' task.id %}" class="fw-bold">{{ task.title }}</a>
+            {% if task.deadline %}
+              <small class="text-muted d-block">Deadline: {{ task.deadline|date:"d M Y H:i" }}</small>
+            {% endif %}
+          </div>
+
+          <div>
+            <span class="badge bg-secondary">{{ task.priority }}</span>
+            {% if task.is_completed %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="list-group-item">No tasks assigned.</li>
+      {% endfor %}
+    </ul>
+
+  </div>
 {% endblock %}

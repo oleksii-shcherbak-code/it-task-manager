@@ -1,30 +1,87 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2>My Profile</h2>
-  <div class="card">
-    <div class="card-body">
-      <p><strong>Username:</strong> {{ user.username }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Position:</strong> {{ user.position }}</p>
-      <a href="{% url 'profile-edit' %}" class="btn btn-primary">Edit Profile</a>
-    </div>
-  </div>
+  <div class="container mt-4">
 
-  <h3 class="mt-4">My Tasks</h3>
-  <ul class="list-group">
-    {% for task in user.tasks.all %}
-      <li class="list-group-item">
-        <a href="{% url 'task-detail' task.id %}">{{ task.title }}</a>
-        <span class="badge bg-secondary">{{ task.priority }}</span>
-        {% if task.is_completed %}
-          <span class="badge bg-success">Completed</span>
-        {% endif %}
-      </li>
-    {% empty %}
-      <li class="list-group-item">No tasks assigned.</li>
-    {% endfor %}
-  </ul>
-</div>
+    <h2 class="mb-4">My Profile</h2>
+
+    <!-- Profile Card -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+
+        <div class="row">
+
+          <!-- LEFT SIDE: Text info -->
+          <div class="col-md-8">
+            <h3 class="fw-bold">{{ user.first_name }} {{ user.last_name }}</h3>
+
+            <p class="mb-1">
+              <strong>Username:</strong> {{ user.username }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Email:</strong> {{ user.email }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Position:</strong> {{ user.position|default:"—" }}
+            </p>
+
+            <a href="{% url 'profile-edit' %}" class="btn btn-outline-primary mt-3">
+              Edit Profile
+            </a>
+
+            <a href="{% url 'avatar-change' %}" class="btn btn-outline-secondary mt-3 ms-2">
+              Change Avatar
+            </a>
+          </div>
+
+          <!-- RIGHT SIDE: Avatar -->
+          <div class="col-md-4 text-center">
+            <img src="{% static 'avatars/' %}{{ user.avatar }}"
+                 alt="avatar"
+                 class="rounded-circle mb-2"
+                 width="140" height="140">
+
+            <div class="mt-2">
+            <span class="badge bg-primary fs-6">
+              {{ user.position|default:"No position" }}
+            </span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Assigned Tasks -->
+    <h3 class="mb-3">📝 My Tasks</h3>
+
+    <ul class="list-group">
+      {% for task in user.tasks.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'task-detail' task.id %}" class="fw-bold">{{ task.title }}</a>
+            {% if task.deadline %}
+              <small class="text-muted d-block">Deadline: {{ task.deadline|date:"d M Y H:i" }}</small>
+            {% endif %}
+          </div>
+
+          <div>
+            <span class="badge bg-secondary">{{ task.priority }}</span>
+            {% if task.is_completed %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="list-group-item">You have no assigned tasks.</li>
+      {% endfor %}
+    </ul>
+
+  </div>
 {% endblock %}
