@@ -36,14 +36,24 @@ class ProfileUpdateView(UpdateView):
         return self.request.user
 
 
+# -----------------------------
+# Workers
+# -----------------------------
 class WorkerListView(LoginRequiredMixin, ListView):
     model = Worker
     template_name = "workers/worker_list.html"
     context_object_name = "workers"
 
 
+class WorkerDetailView(LoginRequiredMixin, DetailView):
+    model = Worker
+    template_name = "workers/worker_detail.html"
+    context_object_name = "worker"
 
 
+# -----------------------------
+# Tasks
+# -----------------------------
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = "tasks/task_list.html"
@@ -155,3 +165,19 @@ class TaskTypeAnalyticsView(TemplateView):
         context["completed_by_type"] = completed_by_type
         return context
 
+class AvatarChangeView(LoginRequiredMixin, TemplateView):
+    template_name = "avatar_change.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["avatars"] = [choice[0] for choice in AVATAR_CHOICES]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        avatar = request.POST.get("avatar")
+
+        if avatar:
+            request.user.avatar = avatar
+            request.user.save()
+
+        return self.get(request, *args, **kwargs)
