@@ -2,7 +2,6 @@ from datetime import timedelta
 
 from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -16,11 +15,21 @@ from .models import Task, Worker, TaskType, AVATAR_CHOICES
 
 
 # -----------------------------
-# Home
+# Home (Login Required)
 # -----------------------------
-def index(request):
-    context = {"title": "Home"}
-    return render(request, "tasks/index.html", context=context)
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = "tasks/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = "Home"
+        context["tasks_total"] = Task.objects.count()
+        context["tasks_active"] = Task.objects.filter(is_completed=False).count()
+        context["tasks_completed"] = Task.objects.filter(is_completed=True).count()
+        context["workers_total"] = Worker.objects.count()
+
+        return context
 
 
 # -----------------------------
@@ -32,16 +41,16 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("login")
 
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "profile.html"
 
 
-class ProfileUpdateView(UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     form_class = WorkerChangeForm
     template_name = "profile_edit.html"
     success_url = reverse_lazy("profile")
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user
 
 
@@ -101,15 +110,15 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
 
 
 # -----------------------------
-# Task Types
+# Task Types (Login Required)
 # -----------------------------
-class TaskTypeListView(ListView):
+class TaskTypeListView(LoginRequiredMixin, ListView):
     model = TaskType
     template_name = "task_type/task_type_list.html"
     context_object_name = "task_types"
 
 
-class TaskTypeDetailView(DetailView):
+class TaskTypeDetailView(LoginRequiredMixin, DetailView):
     model = TaskType
     template_name = "task_type/task_type_detail.html"
     context_object_name = "task_type"
@@ -120,27 +129,27 @@ class TaskTypeDetailView(DetailView):
         return context
 
 
-class TaskTypeCreateView(CreateView):
+class TaskTypeCreateView(LoginRequiredMixin, CreateView):
     model = TaskType
     fields = ["name"]
     template_name = "task_type/task_type_form.html"
     success_url = reverse_lazy("task-type-list")
 
 
-class TaskTypeUpdateView(UpdateView):
+class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = TaskType
     fields = ["name"]
     template_name = "task_type/task_type_form.html"
     success_url = reverse_lazy("task-type-list")
 
 
-class TaskTypeDeleteView(DeleteView):
+class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
     model = TaskType
     template_name = "task_type/task_type_confirm_delete.html"
     success_url = reverse_lazy("task-type-list")
 
 
-class TaskTypeAnalyticsView(TemplateView):
+class TaskTypeAnalyticsView(LoginRequiredMixin, TemplateView):
     template_name = "task_type/task_type_analytics.html"
 
     def get_context_data(self, **kwargs):
@@ -201,9 +210,12 @@ class SearchView(LoginRequiredMixin, TemplateView):
 
 
 # -----------------------------
-# Autocomplete Suggestions
+# Autocomplete Suggestions (Login Required)
 # -----------------------------
 def search_suggest(request):
+    if not request.user.is_authenticated:
+        return JsonResponse([], safe=False)
+
     query = request.GET.get("q", "").strip()
 
     if not query:
@@ -211,7 +223,6 @@ def search_suggest(request):
 
     suggestions = []
 
-    # Workers
     for worker in Worker.objects.all():
         full_name = f"{worker.first_name} {worker.last_name}"
         if query.lower() in full_name.lower():
@@ -221,7 +232,6 @@ def search_suggest(request):
                 "id": worker.id,
             })
 
-    # Tasks
     for task in Task.objects.all():
         if query.lower() in task.title.lower():
             suggestions.append({
