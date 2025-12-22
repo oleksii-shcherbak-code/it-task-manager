@@ -16,32 +16,12 @@
       </div>
     {% endif %}
 
-    <!-- Tasks -->
-    {% if tasks %}
-      <h4 class="mt-4">Tasks</h4>
-      <div class="list-group mb-4">
-        {% for task in tasks %}
-          <a href="{% url 'task-detail' task.id %}" class="list-group-item list-group-item-action">
-            <div class="d-flex justify-content-between">
-                        <span>
-                            <strong>{{ task.title }}</strong>
-                          {% if task.task_type %}
-                            <small class="text-muted">({{ task.task_type.name }})</small>
-                          {% endif %}
-                        </span>
-              <span class="badge bg-secondary">{{ task.priority }}</span>
-            </div>
-          </a>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <!-- Workers -->
+    <!-- Workers FIRST -->
     {% if workers %}
       <h4 class="mt-4">Workers</h4>
-      <div class="row">
+      <div class="row mb-4">
         {% for worker in workers %}
-          <div class="col-4 mb-3">
+          <div class="col-12 col-md-6 col-lg-4 mb-3">
             <a href="{% url 'worker-detail' worker.id %}" class="text-decoration-none text-dark">
               <div class="card p-3 shadow-sm">
                 <div class="d-flex align-items-center">
@@ -56,6 +36,26 @@
               </div>
             </a>
           </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Tasks SECOND -->
+    {% if tasks %}
+      <h4 class="mt-4">Tasks</h4>
+      <div class="list-group mb-4">
+        {% for task in tasks %}
+          <a href="{% url 'task-detail' task.id %}" class="list-group-item list-group-item-action">
+            <div class="d-flex justify-content-between">
+              <span>
+                <strong>{{ task.title }}</strong>
+                {% if task.task_type %}
+                  <small class="text-muted">({{ task.task_type.name }})</small>
+                {% endif %}
+              </span>
+              <span class="badge bg-secondary">{{ task.priority }}</span>
+            </div>
+          </a>
         {% endfor %}
       </div>
     {% endif %}

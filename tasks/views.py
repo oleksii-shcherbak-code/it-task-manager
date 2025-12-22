@@ -247,19 +247,37 @@ class SearchView(LoginRequiredMixin, TemplateView):
         context["query"] = query
 
         if not query:
-            context["tasks"] = []
             context["workers"] = []
+            context["tasks"] = []
             return context
 
+        workers_qs = (
+            Worker.objects
+            .select_related("position")
+            .only("id", "first_name", "last_name", "position__name")
+            .filter(first_name__icontains=query) |
+            Worker.objects
+            .select_related("position")
+            .only("id", "first_name", "last_name", "position__name")
+            .filter(last_name__icontains=query)
+        ).distinct()
+
         workers = []
-        for worker in Worker.objects.all():
+        for worker in workers_qs:
             full_name = f"{worker.first_name} {worker.last_name}"
             score = fuzz.partial_ratio(query.lower(), full_name.lower())
             if score > 60:
                 workers.append(worker)
 
+        tasks_qs = (
+            Task.objects
+            .select_related("assignee", "task_type")
+            .only("id", "title", "assignee__username", "task_type__name")
+            .filter(title__icontains=query)
+        )
+
         tasks = []
-        for task in Task.objects.all():
+        for task in tasks_qs:
             score = fuzz.partial_ratio(query.lower(), task.title.lower())
             if score > 60:
                 tasks.append(task)
@@ -268,6 +286,7 @@ class SearchView(LoginRequiredMixin, TemplateView):
         context["tasks"] = tasks
 
         return context
+
 
 
 # -----------------------------
