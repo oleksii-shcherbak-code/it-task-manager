@@ -12,7 +12,12 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    TemplateView,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -55,9 +60,7 @@ class RegisterView(CreateView):
 
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        activation_link = self.request.build_absolute_uri(
-            f"/activate/{uid}/{token}/"
-        )
+        activation_link = self.request.build_absolute_uri(f"/activate/{uid}/{token}/")
 
         send_mail(
             "Activate your account",
@@ -68,7 +71,7 @@ class RegisterView(CreateView):
 
         messages.info(
             self.request,
-            "Registration successful. Check your email for the activation link."
+            "Registration successful. Check your email for the activation link.",
         )
         return redirect("login")
 
@@ -84,7 +87,9 @@ class ActivateAccountView(View):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            messages.success(request, "✅ Your account has been activated. You can now log in.")
+            messages.success(
+                request, "✅ Your account has been activated. You can now log in."
+            )
             return redirect("login")
 
         messages.error(request, "❌ Activation link is invalid or expired.")
@@ -135,11 +140,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        qs = (
-            super()
-            .get_queryset()
-            .select_related("assignee", "task_type")
-        )
+        qs = super().get_queryset().select_related("assignee", "task_type")
 
         sort = self.request.GET.get("sort")
         direction = self.request.GET.get("dir", "asc")
@@ -193,7 +194,15 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = ["title", "description", "priority", "deadline", "task_type", "assignee", "is_completed"]
+    fields = [
+        "title",
+        "description",
+        "priority",
+        "deadline",
+        "task_type",
+        "assignee",
+        "is_completed",
+    ]
     template_name = "tasks/task_form.html"
 
     def get_success_url(self):
@@ -222,10 +231,8 @@ class TaskTypeDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tasks"] = (
-            Task.objects
-            .filter(task_type=self.object)
-            .select_related("assignee", "task_type")
+        context["tasks"] = Task.objects.filter(task_type=self.object).select_related(
+            "assignee", "task_type"
         )
         return context
 
@@ -300,12 +307,10 @@ class SearchView(LoginRequiredMixin, TemplateView):
             return context
 
         workers_qs = (
-            Worker.objects
-            .select_related("position")
+            Worker.objects.select_related("position")
             .only("id", "first_name", "last_name", "position__name")
-            .filter(first_name__icontains=query) |
-            Worker.objects
-            .select_related("position")
+            .filter(first_name__icontains=query)
+            | Worker.objects.select_related("position")
             .only("id", "first_name", "last_name", "position__name")
             .filter(last_name__icontains=query)
         ).distinct()
@@ -318,8 +323,7 @@ class SearchView(LoginRequiredMixin, TemplateView):
                 workers.append(worker)
 
         tasks_qs = (
-            Task.objects
-            .select_related("assignee", "task_type")
+            Task.objects.select_related("assignee", "task_type")
             .only("id", "title", "assignee__username", "task_type__name")
             .filter(title__icontains=query)
         )
@@ -334,7 +338,6 @@ class SearchView(LoginRequiredMixin, TemplateView):
         context["tasks"] = tasks
 
         return context
-
 
 
 # -----------------------------
@@ -354,19 +357,23 @@ def search_suggest(request):
     for worker in Worker.objects.all():
         full_name = f"{worker.first_name} {worker.last_name}"
         if query.lower() in full_name.lower():
-            suggestions.append({
-                "type": "worker",
-                "name": full_name,
-                "id": worker.id,
-            })
+            suggestions.append(
+                {
+                    "type": "worker",
+                    "name": full_name,
+                    "id": worker.id,
+                }
+            )
 
     for task in Task.objects.all():
         if query.lower() in task.title.lower():
-            suggestions.append({
-                "type": "task",
-                "name": task.title,
-                "id": task.id,
-            })
+            suggestions.append(
+                {
+                    "type": "task",
+                    "name": task.title,
+                    "id": task.id,
+                }
+            )
 
     return JsonResponse(suggestions[:5], safe=False)
 

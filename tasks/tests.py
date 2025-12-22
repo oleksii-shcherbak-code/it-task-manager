@@ -24,7 +24,7 @@ class WorkerModelTest(TestCase):
             username="harry",
             first_name="Harry",
             last_name="Potter",
-            password="expelliarmus123"
+            password="expelliarmus123",
         )
         self.assertEqual(str(worker), "harry (Harry Potter)")
 
@@ -47,7 +47,7 @@ class TaskModelTest(TestCase):
             title="Defeat Harry",
             task_type=self.tt,
             assignee=self.worker,
-            priority=Task.Priority.URGENT
+            priority=Task.Priority.URGENT,
         )
         self.assertIn("Defeat Harry", str(task))
         self.assertIn("urgent", str(task))
@@ -58,43 +58,53 @@ class TaskModelTest(TestCase):
 # -----------------------------
 class WorkerCreationFormTest(TestCase):
     def test_valid_form(self):
-        form = WorkerCreationForm(data={
-            "username": "hermione",
-            "first_name": "Hermione",
-            "last_name": "Granger",
-            "email": "hermione@hogwarts.com",
-            "position": None,
-            "password1": "Wingardium123!",
-            "password2": "Wingardium123!",
-        })
+        form = WorkerCreationForm(
+            data={
+                "username": "hermione",
+                "first_name": "Hermione",
+                "last_name": "Granger",
+                "email": "hermione@hogwarts.com",
+                "position": None,
+                "password1": "Wingardium123!",
+                "password2": "Wingardium123!",
+            }
+        )
         self.assertTrue(form.is_valid())
 
     def test_invalid_username(self):
-        form = WorkerCreationForm(data={
-            "username": "ron__weasley",
-            "first_name": "Ron",
-            "last_name": "Weasley",
-            "email": "ron@hogwarts.com",
-            "password1": "Scabbers123!",
-            "password2": "Scabbers123!",
-        })
+        form = WorkerCreationForm(
+            data={
+                "username": "ron__weasley",
+                "first_name": "Ron",
+                "last_name": "Weasley",
+                "email": "ron@hogwarts.com",
+                "password1": "Scabbers123!",
+                "password2": "Scabbers123!",
+            }
+        )
         self.assertFalse(form.is_valid())
 
 
 class WorkerChangeFormTest(TestCase):
     def setUp(self):
         self.worker = Worker.objects.create_user(
-            username="snape", first_name="Severus", last_name="Snape", password="always123"
+            username="snape",
+            first_name="Severus",
+            last_name="Snape",
+            password="always123",
         )
 
     def test_change_form_valid(self):
-        form = WorkerChangeForm(instance=self.worker, data={
-            "username": "snape",
-            "first_name": "Severus",
-            "last_name": "Snape",
-            "email": "snape@hogwarts.com",
-            "position": None,
-        })
+        form = WorkerChangeForm(
+            instance=self.worker,
+            data={
+                "username": "snape",
+                "first_name": "Severus",
+                "last_name": "Snape",
+                "email": "snape@hogwarts.com",
+                "position": None,
+            },
+        )
         self.assertTrue(form.is_valid())
 
 
@@ -106,14 +116,17 @@ class RegisterActivateTest(TestCase):
         self.client = Client()
 
     def test_register_creates_inactive_user_and_sends_email(self):
-        response = self.client.post(reverse("register"), {
-            "username": "harry",
-            "first_name": "Harry",
-            "last_name": "Potter",
-            "email": "harry@hogwarts.com",
-            "password1": "Expelliarmus123!",
-            "password2": "Expelliarmus123!",
-        })
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "harry",
+                "first_name": "Harry",
+                "last_name": "Potter",
+                "email": "harry@hogwarts.com",
+                "password1": "Expelliarmus123!",
+                "password2": "Expelliarmus123!",
+            },
+        )
         self.assertRedirects(response, reverse("login"))
         user = Worker.objects.get(username="harry")
         self.assertFalse(user.is_active)
@@ -122,7 +135,10 @@ class RegisterActivateTest(TestCase):
 
     def test_activate_valid_token(self):
         user = Worker.objects.create_user(
-            username="draco", email="draco@hogwarts.com", password="slytherin123", is_active=False
+            username="draco",
+            email="draco@hogwarts.com",
+            password="slytherin123",
+            is_active=False,
         )
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
@@ -133,10 +149,15 @@ class RegisterActivateTest(TestCase):
 
     def test_activate_invalid_token(self):
         user = Worker.objects.create_user(
-            username="bellatrix", email="bellatrix@hogwarts.com", password="crucio123", is_active=False
+            username="bellatrix",
+            email="bellatrix@hogwarts.com",
+            password="crucio123",
+            is_active=False,
         )
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        response = self.client.get(reverse("activate-account", args=[uid, "wrongtoken"]))
+        response = self.client.get(
+            reverse("activate-account", args=[uid, "wrongtoken"])
+        )
         self.assertRedirects(response, reverse("register"))
         user.refresh_from_db()
         self.assertFalse(user.is_active)
@@ -148,13 +169,13 @@ class RegisterActivateTest(TestCase):
 class TaskViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.worker = Worker.objects.create_user(username="harry", password="expelliarmus123")
+        self.worker = Worker.objects.create_user(
+            username="harry", password="expelliarmus123"
+        )
         self.client.login(username="harry", password="expelliarmus123")
         self.tt = TaskType.objects.create(name="Potion")
         self.task = Task.objects.create(
-            title="Brew Polyjuice",
-            task_type=self.tt,
-            assignee=self.worker
+            title="Brew Polyjuice", task_type=self.tt, assignee=self.worker
         )
 
     def test_task_list_view(self):
@@ -177,7 +198,10 @@ class ProfileViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.worker = Worker.objects.create_user(
-            username="harry", first_name="Harry", last_name="Potter", password="expelliarmus123"
+            username="harry",
+            first_name="Harry",
+            last_name="Potter",
+            password="expelliarmus123",
         )
 
     def test_profile_requires_login(self):
@@ -193,13 +217,16 @@ class ProfileViewsTest(TestCase):
 
     def test_profile_update(self):
         self.client.login(username="harry", password="expelliarmus123")
-        response = self.client.post(reverse("profile-edit"), {
-            "username": "harry",
-            "first_name": "Harry",
-            "last_name": "Potter",
-            "email": "harry@hogwarts.com",
-            "position": "",
-        })
+        response = self.client.post(
+            reverse("profile-edit"),
+            {
+                "username": "harry",
+                "first_name": "Harry",
+                "last_name": "Potter",
+                "email": "harry@hogwarts.com",
+                "position": "",
+            },
+        )
         self.assertRedirects(response, reverse("profile"))
         self.worker.refresh_from_db()
         self.assertEqual(self.worker.email, "harry@hogwarts.com")
@@ -209,7 +236,10 @@ class AvatarChangeViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.worker = Worker.objects.create_user(
-            username="voldemort", first_name="Tom", last_name="Riddle", password="horcrux123"
+            username="voldemort",
+            first_name="Tom",
+            last_name="Riddle",
+            password="horcrux123",
         )
         self.client.login(username="voldemort", password="horcrux123")
 
@@ -228,7 +258,10 @@ class SearchViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.worker = Worker.objects.create_user(
-            username="hermione", first_name="Hermione", last_name="Granger", password="leviosa123"
+            username="hermione",
+            first_name="Hermione",
+            last_name="Granger",
+            password="leviosa123",
         )
         self.task_type = TaskType.objects.create(name="Magic")
         self.task = Task.objects.create(
@@ -257,7 +290,10 @@ class SearchSuggestTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.worker = Worker.objects.create_user(
-            username="ron", first_name="Ron", last_name="Weasley", password="scabbers123"
+            username="ron",
+            first_name="Ron",
+            last_name="Weasley",
+            password="scabbers123",
         )
         self.task_type = TaskType.objects.create(name="Magic")
         self.task = Task.objects.create(

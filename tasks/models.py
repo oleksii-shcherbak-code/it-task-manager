@@ -26,16 +26,11 @@ class Position(models.Model):
 
 class Worker(AbstractUser):
     position = models.ForeignKey(
-        Position,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        Position, on_delete=models.SET_NULL, null=True, blank=True
     )
 
     avatar = models.CharField(
-        max_length=30,
-        choices=AVATAR_CHOICES,
-        default="avatar1.svg"
+        max_length=30, choices=AVATAR_CHOICES, default="avatar1.svg"
     )
 
     class Meta:
@@ -73,11 +68,11 @@ class Task(models.Model):
     deadline = models.DateTimeField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
     priority = models.CharField(
-        max_length=10,
-        choices=Priority.choices,
-        default=Priority.MEDIUM
+        max_length=10, choices=Priority.choices, default=Priority.MEDIUM
     )
-    task_type = models.ForeignKey(TaskType, on_delete=models.CASCADE, related_name="tasks")
+    task_type = models.ForeignKey(
+        TaskType, on_delete=models.CASCADE, related_name="tasks"
+    )
     assignee = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name="tasks")
 
     class Meta:
