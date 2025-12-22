@@ -148,7 +148,6 @@ input:focus, select:focus, textarea:focus {
     outline: none;
 }
 
-/* ✅ Checkbox fix */
 input[type="checkbox"] {
     width: 20px !important;
     height: 20px !important;
@@ -237,6 +236,10 @@ input[type="checkbox"] {
         padding: 12px 6px;
     }
 }
+
+/* ---------------------------------------------------------
+   Priority Status
+--------------------------------------------------------- */
 .priority-low {
     background-color: #d4edda;
     color: #155724;
