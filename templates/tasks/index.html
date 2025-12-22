@@ -2,55 +2,55 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
+  <div class="container mt-4">
 
-  <!-- Greeting -->
-  <div class="text-center mb-5">
-    <h1 class="fw-bold">Welcome back, {{ user.first_name|default:user.username }} 👋</h1>
-    <p class="text-muted fs-5">
-      Manage tasks, workers, and priorities — all in one place.
-    </p>
+    <!-- Greeting -->
+    <div class="text-center mb-5">
+      <h1 class="fw-bold">Welcome back, {{ user.first_name|default:user.username }} 👋</h1>
+      <p class="text-muted fs-5">
+        Manage tasks, workers, and priorities — all in one place.
+      </p>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="row text-center mb-5">
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm p-3">
+          <h4>{{ tasks_total }}</h4>
+          <p class="text-muted">Total Tasks</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm p-3">
+          <h4>{{ tasks_active }}</h4>
+          <p class="text-muted">Active Tasks</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm p-3">
+          <h4>{{ tasks_completed }}</h4>
+          <p class="text-muted">Completed</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm p-3">
+          <h4>{{ workers_total }}</h4>
+          <p class="text-muted">Workers</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="text-center mb-5">
+      <a href="{% url 'task-create' %}" class="btn btn-primary btn-lg me-2">Create Task</a>
+      <a href="{% url 'task-list' %}" class="btn btn-outline-primary btn-lg me-2">View Tasks</a>
+      <a href="{% url 'worker-list' %}" class="btn btn-outline-secondary btn-lg">View Workers</a>
+    </div>
+
   </div>
-
-  <!-- Dashboard Cards -->
-  <div class="row text-center mb-5">
-
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm p-3">
-        <h4>{{ tasks_total }}</h4>
-        <p class="text-muted">Total Tasks</p>
-      </div>
-    </div>
-
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm p-3">
-        <h4>{{ tasks_active }}</h4>
-        <p class="text-muted">Active Tasks</p>
-      </div>
-    </div>
-
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm p-3">
-        <h4>{{ tasks_completed }}</h4>
-        <p class="text-muted">Completed</p>
-      </div>
-    </div>
-
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm p-3">
-        <h4>{{ workers_total }}</h4>
-        <p class="text-muted">Workers</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="text-center mb-5">
-    <a href="{% url 'task-create' %}" class="btn btn-primary btn-lg me-2">Create Task</a>
-    <a href="{% url 'task-list' %}" class="btn btn-outline-primary btn-lg me-2">View Tasks</a>
-    <a href="{% url 'worker-list' %}" class="btn btn-outline-secondary btn-lg">View Workers</a>
-  </div>
-
-</div>
 {% endblock %}
