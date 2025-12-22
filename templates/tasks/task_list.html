@@ -68,10 +68,25 @@
     <tbody>
     {% for task in tasks %}
       <tr class="task-row" onclick="window.location='{% url 'task-detail' task.pk %}'">
+
         <td>{{ task.title }}</td>
+
         <td>{{ task.assignee }}</td>
+
         <td>{{ task.deadline|date:"Y-m-d H:i" }}</td>
-        <td><span class="badge bg-info">{{ task.get_priority_display }}</span></td>
+
+        <td>
+            <span class="badge
+              {% if task.priority == 'low' %}priority-low
+              {% elif task.priority == 'medium' %}priority-medium
+              {% elif task.priority == 'high' %}priority-high
+              {% elif task.priority == 'urgent' %}priority-urgent
+              {% endif %}
+            ">
+              {{ task.get_priority_display }}
+            </span>
+        </td>
+
         <td>
           {% if task.is_completed %}
             <span class="badge bg-success">Completed</span>
@@ -79,6 +94,7 @@
             <span class="badge bg-warning text-dark">In progress</span>
           {% endif %}
         </td>
+
       </tr>
     {% empty %}
       <tr>
