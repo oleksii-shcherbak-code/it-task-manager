@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Case, When, IntegerField
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
@@ -17,7 +17,7 @@ from .models import Task, Worker, TaskType, AVATAR_CHOICES
 
 
 # -----------------------------
-# Home (Login Required)
+# Home
 # -----------------------------
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "tasks/index.html"
@@ -64,11 +64,17 @@ class WorkerListView(LoginRequiredMixin, ListView):
     template_name = "workers/worker_list.html"
     context_object_name = "workers"
 
+    def get_queryset(self):
+        return Worker.objects.select_related("position")
+
 
 class WorkerDetailView(LoginRequiredMixin, DetailView):
     model = Worker
     template_name = "workers/worker_detail.html"
     context_object_name = "worker"
+
+    def get_queryset(self):
+        return Worker.objects.select_related("position")
 
 
 # -----------------------------
@@ -81,20 +87,34 @@ class TaskListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("assignee", "task_type")
+        )
 
         sort = self.request.GET.get("sort")
         direction = self.request.GET.get("dir", "asc")
+        desc = "-" if direction == "desc" else ""
 
-        if sort in ["title", "deadline", "priority", "is_completed"]:
-            if direction == "desc":
-                return qs.order_by(f"-{sort}")
-            return qs.order_by(sort)
+        priority_order = Case(
+            When(priority="low", then=1),
+            When(priority="medium", then=2),
+            When(priority="high", then=3),
+            When(priority="urgent", then=4),
+            output_field=IntegerField(),
+        )
+
+        qs = qs.annotate(priority_order=priority_order)
+
+        if sort == "priority":
+            return qs.order_by(f"{desc}priority_order")
+
+        if sort in ["title", "deadline", "is_completed"]:
+            return qs.order_by(f"{desc}{sort}")
 
         if sort == "assignee":
-            if direction == "desc":
-                return qs.order_by("-assignee__username")
-            return qs.order_by("assignee__username")
+            return qs.order_by(f"{desc}assignee__username")
 
         return qs
 
@@ -109,6 +129,9 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
     template_name = "tasks/task_detail.html"
     context_object_name = "task"
+
+    def get_queryset(self):
+        return Task.objects.select_related("assignee", "task_type")
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
@@ -136,7 +159,7 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
 
 
 # -----------------------------
-# Task Types (Login Required)
+# Task Types
 # -----------------------------
 class TaskTypeListView(LoginRequiredMixin, ListView):
     model = TaskType
@@ -151,7 +174,11 @@ class TaskTypeDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tasks"] = Task.objects.filter(task_type=self.object)
+        context["tasks"] = (
+            Task.objects
+            .filter(task_type=self.object)
+            .select_related("assignee", "task_type")
+        )
         return context
 
 
@@ -178,10 +205,8 @@ class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
 @login_required
 def toggle_task_status(request, pk):
     task = get_object_or_404(Task, pk=pk)
-
     task.is_completed = not task.is_completed
     task.save()
-
     return redirect("task-detail", pk=pk)
 
 
@@ -210,7 +235,7 @@ class TaskTypeAnalyticsView(LoginRequiredMixin, TemplateView):
 
 
 # -----------------------------
-# Search (Fuzzy Search)
+# Search (Fuzzy)
 # -----------------------------
 class SearchView(LoginRequiredMixin, TemplateView):
     template_name = "search.html"
@@ -246,7 +271,7 @@ class SearchView(LoginRequiredMixin, TemplateView):
 
 
 # -----------------------------
-# Autocomplete Suggestions (Login Required)
+# Autocomplete
 # -----------------------------
 def search_suggest(request):
     if not request.user.is_authenticated:
