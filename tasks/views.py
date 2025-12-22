@@ -77,7 +77,7 @@ class RegisterView(CreateView):
 
 
 class ActivateAccountView(View):
-    def get(self, request, uidb64, token):
+    def get(self, request, uidb64, token): # noqa
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = Worker.objects.get(pk=uid)
@@ -307,12 +307,12 @@ class SearchView(LoginRequiredMixin, TemplateView):
             return context
 
         workers_qs = (
-            Worker.objects.select_related("position")
-            .only("id", "first_name", "last_name", "position__name")
-            .filter(first_name__icontains=query)
-            | Worker.objects.select_related("position")
-            .only("id", "first_name", "last_name", "position__name")
-            .filter(last_name__icontains=query)
+                Worker.objects.select_related("position")
+                .only("id", "first_name", "last_name", "position__name")
+                .filter(first_name__icontains=query)
+                | Worker.objects.select_related("position")
+                .only("id", "first_name", "last_name", "position__name")
+                .filter(last_name__icontains=query)
         ).distinct()
 
         workers = []
