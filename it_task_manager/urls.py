@@ -45,7 +45,7 @@ from tasks.views import (
     AvatarChangeView,
 
     # Task status
-    toggle_task_status,
+    toggle_task_status, ActivateAccountView,
 )
 
 urlpatterns = [
@@ -58,14 +58,29 @@ urlpatterns = [
 
     # Auth
     path("register/", RegisterView.as_view(), name="register"),
+    path("activate/<uidb64>/<token>/", ActivateAccountView.as_view(), name="activate-account"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
     # Profile
     path("profile/", ProfileView.as_view(), name="profile"),
     path("profile/edit/", ProfileUpdateView.as_view(), name="profile-edit"),
-    path("password_change/", auth_views.PasswordChangeView.as_view(template_name="registration/password_change.html"), name="password_change"),
-    path("password_reset/", auth_views.PasswordResetView.as_view(template_name="registration/password_reset.html"), name="password_reset"),
+    path("profile/avatar/", AvatarChangeView.as_view(), name="avatar-change"),
+
+    # Password management
+    path("password_change/", auth_views.PasswordChangeView.as_view(
+        template_name="registration/password_change.html"), name="password_change"),
+    path("password_change/done/", auth_views.PasswordChangeDoneView.as_view(
+        template_name="registration/password_change_done.html"), name="password_change_done"),
+
+    path("password_reset/", auth_views.PasswordResetView.as_view(
+        template_name="registration/password_reset.html"), name="password_reset"),
+    path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(
+        template_name="registration/password_reset_done.html"), name="password_reset_done"),
+    path("reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(
+        template_name="registration/password_reset_confirm.html"), name="password_reset_confirm"),
+    path("reset/done/", auth_views.PasswordResetCompleteView.as_view(
+        template_name="registration/password_reset_complete.html"), name="password_reset_complete"),
 
     # Workers
     path("workers/", WorkerListView.as_view(), name="worker-list"),
@@ -77,6 +92,7 @@ urlpatterns = [
     path("tasks/create/", TaskCreateView.as_view(), name="task-create"),
     path("tasks/<int:pk>/update/", TaskUpdateView.as_view(), name="task-update"),
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
+    path("tasks/<int:pk>/toggle/", toggle_task_status, name="task-toggle"),
 
     # Task Types
     path("task-types/", TaskTypeListView.as_view(), name="task-type-list"),
@@ -89,11 +105,5 @@ urlpatterns = [
     # Search
     path("search/", SearchView.as_view(), name="search"),
     path("search/suggest/", search_suggest, name="search-suggest"),
-
-    # Avatar
-    path("profile/avatar/", AvatarChangeView.as_view(), name="avatar-change"),
-
-    # Task status
-    path("tasks/<int:pk>/toggle/", toggle_task_status, name="task-toggle"),
-
 ]
+
