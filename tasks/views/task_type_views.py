@@ -12,6 +12,7 @@ class TaskTypeListView(LoginRequiredMixin, ListView):
     template_name = "task_type/task_type_list.html"
     context_object_name = "task_types"
 
+
 class TaskTypeDetailView(LoginRequiredMixin, DetailView):
     model = TaskType
     template_name = "task_type/task_type_detail.html"
@@ -22,11 +23,13 @@ class TaskTypeDetailView(LoginRequiredMixin, DetailView):
         context["tasks"] = Task.objects.filter(task_type=self.object).select_related("assignee", "task_type")
         return context
 
+
 class TaskTypeCreateView(LoginRequiredMixin, CreateView):
     model = TaskType
     fields = ["name"]
     template_name = "task_type/task_type_form.html"
     success_url = reverse_lazy("task-type-list")
+
 
 class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = TaskType
@@ -34,10 +37,12 @@ class TaskTypeUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "task_type/task_type_form.html"
     success_url = reverse_lazy("task-type-list")
 
+
 class TaskTypeDeleteView(LoginRequiredMixin, DeleteView):
     model = TaskType
     template_name = "task_type/task_type_confirm_delete.html"
     success_url = reverse_lazy("task-type-list")
+
 
 class TaskTypeAnalyticsView(LoginRequiredMixin, TemplateView):
     template_name = "task_type/task_type_analytics.html"

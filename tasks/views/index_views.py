@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Case, When, IntegerField
 from tasks.models import Task, Worker
 
+
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "tasks/index.html"
 
