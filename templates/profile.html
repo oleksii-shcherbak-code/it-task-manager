@@ -6,13 +6,11 @@
 
     <h2 class="mb-4">My Profile</h2>
 
-    <!-- Profile Card -->
     <div class="card mb-4 shadow-sm">
       <div class="card-body">
 
         <div class="row">
 
-          <!-- LEFT SIDE: Text info -->
           <div class="col-md-8">
             <h3 class="fw-bold">{{ user.first_name }} {{ user.last_name }}</h3>
 
@@ -28,7 +26,7 @@
               <strong>Position:</strong> {{ user.position|default:"—" }}
             </p>
 
-            <a href="{% url 'profile-edit' %}" class="btn btn-outline-primary mt-3">
+            <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary mt-3">
               Edit Profile
             </a>
 
@@ -37,7 +35,6 @@
             </a>
           </div>
 
-          <!-- RIGHT SIDE: Avatar -->
           <div class="col-md-4 text-center">
             <img src="{% static 'avatars/' %}{{ user.avatar }}"
                  alt="avatar"
@@ -56,7 +53,6 @@
       </div>
     </div>
 
-    <!-- Assigned Tasks -->
     <h3 class="mb-3">📝 My Tasks</h3>
 
     <ul class="list-group">
