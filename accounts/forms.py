@@ -26,10 +26,20 @@ class BaseWorkerForm(forms.ModelForm):
         validate_username(self.cleaned_data.get("username"))
         return self.cleaned_data.get("username")
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if Worker.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email must be unique.")
+        return email
 
-class WorkerCreationForm(UserCreationForm, BaseWorkerForm):
-    pass
+
+class WorkerCreationForm(BaseWorkerForm, UserCreationForm):
+    class Meta(BaseWorkerForm.Meta, UserCreationForm.Meta):
+        pass
 
 
-class WorkerChangeForm(UserChangeForm, BaseWorkerForm):
+class WorkerChangeForm(BaseWorkerForm, UserChangeForm):
     password = None
+
+    class Meta(BaseWorkerForm.Meta, UserChangeForm.Meta):
+        pass
