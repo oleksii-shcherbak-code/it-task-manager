@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>
+    {% if form.instance.pk %}
+      Edit Task Type
+    {% else %}
+      Create Task Type
+    {% endif %}
+  </h2>
+
+  <form method="post" class="mt-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <button type="submit" class="btn btn-success">Save</button>
+      <a href="{% url 'task-type-list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

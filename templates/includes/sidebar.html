@@ -1,0 +1,30 @@
+<div class="d-flex flex-column p-3 sidebar-menu">
+
+  <h4 class="mb-4 text-muted">Navigation</h4>
+
+  <a class="sidebar-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
+     href="{% url 'index' %}">
+    <span class="icon">🏠</span> Home
+  </a>
+
+  <a class="sidebar-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+     href="{% url 'profile' %}">
+    <span class="icon">🙍</span> Profile
+  </a>
+
+  <a class="sidebar-item {% if request.resolver_match.url_name == 'task-list' %}active{% endif %}"
+     href="{% url 'task-list' %}">
+    <span class="icon">📝</span> Tasks
+  </a>
+
+  <a class="sidebar-item {% if request.resolver_match.url_name == 'worker-list' %}active{% endif %}"
+     href="{% url 'worker-list' %}">
+    <span class="icon">👥</span> Workers
+  </a>
+
+  <a class="sidebar-item {% if request.resolver_match.url_name == 'task-type-list' %}active{% endif %}"
+     href="{% url 'task-type-list' %}">
+    <span class="icon">📂</span> Task Types
+  </a>
+
+</div>

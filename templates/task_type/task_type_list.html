@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">📂 Task Types</h2>
+      <div>
+        <a href="{% url 'task-type-create' %}" class="btn btn-success me-2">➕ Add Task Type</a>
+        <a href="{% url 'task-type-analytics' %}" class="btn btn-info">📊 Analytics</a>
+      </div>
+    </div>
+
+    {% if task_types %}
+      <div class="card shadow-sm">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tt in task_types %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                  <a href="{% url 'task-type-detail' tt.pk %}" class="text-decoration-none">
+                    {{ tt.name }}
+                  </a>
+                </td>
+                <td class="text-end">
+                  <a href="{% url 'task-type-update' tt.pk %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                  <a href="{% url 'task-type-delete' tt.pk %}" class="btn btn-sm btn-danger">🗑 Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-secondary mt-3" role="alert">
+        No task types yet.
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

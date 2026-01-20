@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Tasks</title>{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Tasks</h2>
+    <a href="{% url 'task-create' %}" class="btn btn-success">+ Create Task</a>
+  </div>
+
+  <table class="table table-hover table-bordered">
+    <thead class="table-light">
+    <tr>
+
+      <th>
+        <a href="?sort=title&dir={% if current_sort == 'title' and current_dir == 'asc' %}desc{% else %}asc{% endif %}"
+           class="sortable-column">
+          <span>Title</span>
+          {% if current_sort == "title" %}
+            <span>{% if current_dir == "asc" %}▲{% else %}▼{% endif %}</span>
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="?sort=assignee&dir={% if current_sort == 'assignee' and current_dir == 'asc' %}desc{% else %}asc{% endif %}"
+           class="sortable-column">
+          <span>Assignee</span>
+          {% if current_sort == "assignee" %}
+            <span>{% if current_dir == "asc" %}▲{% else %}▼{% endif %}</span>
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="?sort=deadline&dir={% if current_sort == 'deadline' and current_dir == 'asc' %}desc{% else %}asc{% endif %}"
+           class="sortable-column">
+          <span>Deadline</span>
+          {% if current_sort == "deadline" %}
+            <span>{% if current_dir == "asc" %}▲{% else %}▼{% endif %}</span>
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="?sort=priority&dir={% if current_sort == 'priority' and current_dir == 'asc' %}desc{% else %}asc{% endif %}"
+           class="sortable-column">
+          <span>Priority</span>
+          {% if current_sort == "priority" %}
+            <span>{% if current_dir == "asc" %}▲{% else %}▼{% endif %}</span>
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="?sort=is_completed&dir={% if current_sort == 'is_completed' and current_dir == 'asc' %}desc{% else %}asc{% endif %}"
+           class="sortable-column">
+          <span>Status</span>
+          {% if current_sort == "is_completed" %}
+            <span>{% if current_dir == "asc" %}▲{% else %}▼{% endif %}</span>
+          {% endif %}
+        </a>
+      </th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for task in tasks %}
+      <tr class="task-row" onclick="window.location='{% url 'task-detail' task.pk %}'">
+
+        <td>{{ task.title }}</td>
+
+        <td>{{ task.assignee }}</td>
+
+        <td>{{ task.deadline|date:"Y-m-d H:i" }}</td>
+
+        <td>
+            <span class="badge
+              {% if task.priority == 'low' %}priority-low
+              {% elif task.priority == 'medium' %}priority-medium
+              {% elif task.priority == 'high' %}priority-high
+              {% elif task.priority == 'urgent' %}priority-urgent
+              {% endif %}
+            ">
+              {{ task.get_priority_display }}
+            </span>
+        </td>
+
+        <td>
+          {% if task.is_completed %}
+            <span class="badge bg-success">Completed</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">In progress</span>
+          {% endif %}
+        </td>
+
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5" class="text-center">No tasks yet.</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% include "includes/pagination.html" %}
+
+{% endblock %}
